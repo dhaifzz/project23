@@ -11,7 +11,7 @@ $user = new faculty($db);
 
 $id = $_SESSION['ids'];
 $get_type = $user->get_type($id);
-$array = $user->get_dept();
+$array = $user->get_course();
 ?>
 
 <!DOCTYPE html>
@@ -96,10 +96,12 @@ $array = $user->get_dept();
 
   <div class="subject-container">
     <a class="subject-title">Classes</a>
-
+    <?php
+        foreach($array as $arr) {
+    ?>
     <div class="subject-area">
     <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code">MAD |</div>
+    <div class="subject-code"><?=$arr['acronym']?>|</div>
     <div class="subject-name">Mobile App Development</div>
     <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Mobile App Development">View Letters</button>
     <span class="pending-badge">
@@ -107,6 +109,7 @@ $array = $user->get_dept();
                     <span class="pending-count">3</span>
                 </span>
 </div>
+<?php } ?>
 <div class="subject-area">
     <i class="fa-solid fa-caret-right"></i>
     <div class="subject-code">HCI |</div>
@@ -115,55 +118,8 @@ $array = $user->get_dept();
     <span class="pending-badge">
                     <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
                     <span class="pending-count">0</span>
-                </span>
+                </span> 
 </div>
-<div class="subject-area">
-    <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code">CC101 |</div>
-    <div class="subject-name">Computer Programming 101</div>
-    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Computer Programming 101">View Letters</button>
-    <span class="pending-badge">
-                    <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">5</span>
-                </span>
-</div>
-
-<div class="subject-area">
-    <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code">DSA |</div>
-    <div class="subject-name">Data Structures and Algorithm</div>
-    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Data Structures and Algorithm">View Letters</button>
-    <span class="pending-badge">
-                    <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">6</span>
-                </span>
-</div>
-
-<div class="subject-area">
-    <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code">WebDev 101 |</div>
-    <div class="subject-name">Web Development 101</div>
-    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Web Development 101">View Letters</button>
-    <span class="pending-badge">
-                    <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">0</span>
-                </span>
-</div>
-
-<div class="subject-area">
-    <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code">CC104 |</div>
-    <div class="subject-name">Computer Programming 104</div>
-    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Computer Programming 104">View Letters</button>
-    <span class="pending-badge">
-                    <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">19</span>
-                </span>
-</div>
-</div>
-           </div>
-        </div>
-    </div>
 
 <!-- JS BANDA -->
 

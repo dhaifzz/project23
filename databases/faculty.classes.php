@@ -131,4 +131,18 @@ class faculty {
         }
         return $data;
     }
+
+    function get_course() {
+        $sql = "SELECT * FROM course";
+
+        $query = $this->pdo->prepare($sql);
+
+        $data = null;
+
+        if($query->execute()) {
+            $data = $query->fetchAll();
+        }
+        return $data;
+    }
+    
 }
