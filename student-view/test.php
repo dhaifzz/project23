@@ -16,8 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $excuse_letter = clean_input($_POST['excuse_letter']);
     $course_id = clean_input($_POST['course']);
     $student_id = clean_input($_POST['student_id']);
+    $reason_id = clean_input($_POST['Reason']);
 
-    $excuse_letter_id = $user->excuse($date_absent, $comment, $prof_id, $excuse_letter, $course_id, $student_id);
+    $excuse_letter_id = $user->excuse($date_absent, $comment, $prof_id, $excuse_letter, $course_id, $student_id, $reason_id);
 
     $user->approval($excuse_letter_id);
 }
@@ -114,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php
         $array = $user->get_course();
         $list = $user->get_prof();
+        $reasons = $user->get_reasons();
         if(empty($array)) { ?>
         <div>
         <h1>No Subjects</h1>
@@ -153,13 +155,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                      <select class="form-select scrollable-dropdown" id="Professor" name="Professor" required>
                         <option value="" disabled selected>Submit to:</option>
                         <?php foreach($list as $li) {?>
-                        <option value="<?=$li['ID']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
+                        <option value="<?=$li['ids']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
                         <?php
                         }
                         ?>
                      </select>
                  </div>
 
+                 <div class="mb-3">
+                     <label for="Reason" class="form-label">Reason:</label>
+                     <select class="form-select scrollable-dropdown" id="Reason" name="Reason" required>
+                        <option value="" disabled selected>Reason of Absent:</option>
+                        <?php foreach($reasons as $reason) {?>
+                        <option value="<?=$reason['id']?>"><?=$reason['type']?></option>
+                        <?php
+                        }
+                        ?>
+                     </select>
+                 </div>
 
                     <div class="mb-3">
                         <label for="comment" class="form-label">Comment:</label>

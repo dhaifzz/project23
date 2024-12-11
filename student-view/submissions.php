@@ -11,13 +11,16 @@ $user = new User($db);
 $id = $_SESSION['ids'];
 $submissions = $user->excuse_letters($id);
 $list = $user->get_prof();
+$reasons = $user->get_reasons();
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $excuse_letter_id = clean_input($_POST['id']);
     $date_absent = clean_input($_POST['date_of_absent']);
     $comment = clean_input($_POST['comment']);
     $prof_id = clean_input($_POST['prof']);
-        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $reason_id = clean_input($_POST['Reason']);
+    
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $uploadDir = __DIR__ . '/uploads/';
         $excuse_letter = $uploadDir . basename($_FILES['photo']['name']);
 
@@ -30,7 +33,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(empty($excuse_letter)) {    
         $excuse_letter = null;
     }
-    $user->edit($excuse_letter_id, $date_absent, $comment, $prof_id, $excuse_letter);
+    $user->edit($excuse_letter_id, $date_absent, $comment, $prof_id, $reason_id, $excuse_letter);
     }
 ?>
 
@@ -124,6 +127,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <th>Date of Absent</th>
                     <th>Date of Submission</th>
                     <th>Comment</th>
+                    <th>Reason</th>
                     <th>Photo</th>
                     <th>Actions</th>
                 </tr>
@@ -134,7 +138,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     
                     if(empty($submissions)) { ?>
                     <tr>
-                        <td colspan="7" style="text-align: center;">No Excuse Letter Submitted</td>
+                        <td colspan="8" style="text-align: center;">No Excuse Letter Submitted</td>
                     </tr>
                 <?php  }
                     foreach ($submissions as $submission) { ?>
@@ -144,6 +148,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                            <td><?= clean_input($submission['date_absent']) ?></td>
                            <td><?= clean_input($submission['date_submitted']) ?></td>
                            <td><?= clean_input($submission['comment']) ?></td>
+                           <td><?= clean_input($submission['type']) ?></td>
                            <td>
                                <img src='<?=clean_input($submission['excuse_letter'])?>' alt='Photo' class='img-thumbnail' style='width:50px;' cursor:pointer; data-bs-toggle='modal' data-bs-target='#photoModal' data-photo='<?=$submission['excuse_letter']?>'>
                            </td>
@@ -186,18 +191,32 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="modal-body">
                 <form id="editSubmissionForm" method="POST" enctype="multipart/form-data" name='course'>
+
                     <div class="mb-3">
                         <input class="form-control" type="hidden" id="editId" name="id">
+
                         <label for="professor" class="form-label">Professor:</label>
                         <select class="form-select" id="professor" name="prof" required>
                         <option value="" disabled selected>Submit to:</option>
                             <?php foreach($list as $li) {?>
-                                <option value="<?=$li['ID']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
+                                <option value="<?=$li['ids']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
                             <?php
                             }
                         ?>
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                     <label for="Reason" class="form-label">Reason:</label>
+                     <select class="form-select" id="Reason" name="Reason" required>
+                        <option value="" disabled selected>Reason of Absent:</option>
+                        <?php foreach($reasons as $reason) {?>
+                        <option value="<?=$reason['id']?>"><?=$reason['type']?></option>
+                        <?php
+                        }
+                        ?>
+                     </select>
+                 </div>
 
                     <!-- Date of Absence -->
                     <div class="mb-3">
@@ -291,10 +310,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             button.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
                 const professor = this.getAttribute('professor');
+                const reason = this.getAttribute('Reason');
                 const dateAbsent = this.getAttribute('data-date-absent');
                 const comment = this.getAttribute('data-comment');
 
                 document.getElementById('professor').value = professor;
+                document.getElementById('Reason').value = Reason;
                 document.getElementById('editDateOfAbsent').value = dateAbsent;
                 document.getElementById('editComment').value = comment;
                 document.getElementById('editId').value = id;
@@ -310,6 +331,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Get updated data from the form
             const updatedId = document.getElementById('editId').value;
             const updatedCourse = document.getElementById('professor').value;
+            const updatedReason = document.getElementById('Reason').value;
             const updatedDateAbsent = document.getElementById('editDateOfAbsent').value;
             const updatedComment = document.getElementById('editComment').value;
             const updatedPhoto = document.getElementById('editPhoto').files[0]; 
@@ -349,6 +371,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             console.log('Updated Data:', {
                 id: updatedId,
                 course: updatedCourse,
+                reason: updatedReason,
                 date_absent: updatedDateAbsent,
                 comment: updatedComment ,
 

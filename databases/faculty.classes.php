@@ -133,7 +133,10 @@ class faculty {
     }
 
     function get_course() {
-        $sql = "SELECT * FROM course";
+        $sql = "SELECT name, acronym, COUNT(excuse_letter.id) AS total FROM course 
+            LEFT JOIN excuse_letter ON course.id = excuse_letter.course_id
+            GROUP BY course.id, name, acronym 
+            ORDER BY total DESC";
 
         $query = $this->pdo->prepare($sql);
 

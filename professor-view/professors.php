@@ -101,25 +101,15 @@ $array = $user->get_course();
     ?>
     <div class="subject-area">
     <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code"><?=$arr['acronym']?>|</div>
-    <div class="subject-name">Mobile App Development</div>
-    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Mobile App Development">View Letters</button>
+    <div class="subject-code"><?=$arr['acronym']?> |</div>
+    <div class="subject-name"><?=$arr['name']?></div>
+    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="<?=$arr['name']?>">View Letters</button>
     <span class="pending-badge">
                     <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">3</span>
+                    <span class="pending-count"><?=$arr['total']?></span>
                 </span>
 </div>
 <?php } ?>
-<div class="subject-area">
-    <i class="fa-solid fa-caret-right"></i>
-    <div class="subject-code">HCI |</div>
-    <div class="subject-name">Human Computer Interaction</div>
-    <button class="letter-button" type="button" onclick="navigateToClass(this)" data-subject="Human Computer Interaction">View Letters</button>
-    <span class="pending-badge">
-                    <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">0</span>
-                </span> 
-</div>
 
 <!-- JS BANDA -->
 
@@ -145,12 +135,14 @@ $array = $user->get_course();
         const caretIcon = subjectArea.querySelector('.fa-caret-right');
         if (!caretIcon) return;
 
-        if (pendingCount === 0) {
+        if (isNaN(pendingCount) || pendingCount === 0) { 
+            // Handle no number or 0 case
             pendingCountElement.classList.add('pending-black');
             pendingCountElement.classList.remove('pending-red');
             caretIcon.classList.add('arrow-black');
             caretIcon.classList.remove('arrow-red');
-        } else if (pendingCount > 1) {
+        } else { 
+            // Handle any non-zero number case
             pendingCountElement.classList.add('pending-red');
             pendingCountElement.classList.remove('pending-black');
             caretIcon.classList.add('arrow-red');
