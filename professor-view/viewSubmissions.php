@@ -1,17 +1,12 @@
 <?php
-include '../fonts/google_fonts.php';
-include '../professors_view/approvalButtons.php';
+include '../functions/google_fonts.php';
+include '../professor-view/approvalButtons.php';
 session_start();
 
 $subject = isset($_GET['subject']) ? $_GET['subject'] : null;
 $search = isset($_POST['search']) ? trim($_POST['search']) : '';
 $filterCourse = isset($_POST['filterCourse']) ? $_POST['filterCourse'] : '';
 $filterSubject = isset($_GET['filterSubject']) ? trim($_GET['filterSubject']) : '';
-
-if (!isset($_SESSION['user'])) {
-    header("Location: login_file/login.php");
-    exit();
-}
 
 $queryParams = $_GET;
 unset($queryParams['search']); // Remove 'search' parameter
@@ -50,13 +45,13 @@ $resetUrl = $_SERVER['PHP_SELF'] . '?' . http_build_query($queryParams);
         </div>
         <ul class="sidebar-icons">
             <li>
-                <a href="../professors_view/professors.php">
+                <a href="../professor-view/professors.php">
                     <i class="fa-solid fa-house-chimney-user"></i>
                     <span class="nav-item">Home</span>
                 </a>
             </li>
             <li>
-                <a href="../professors_view/subProfs.php">
+                <a href="../professor-view/subProfs.php">
                     <i class="fa-solid fa-inbox"></i>
                     <span class="nav-item">Submissions</span>
                 </a>
@@ -68,7 +63,7 @@ $resetUrl = $_SERVER['PHP_SELF'] . '?' . http_build_query($queryParams);
                 </a>
             </li>
             <li>
-                <a href="../login.php">
+                <a href="../login/logout.php">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span class="nav-item">Logout</span>
                 </a>

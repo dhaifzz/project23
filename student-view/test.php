@@ -8,6 +8,7 @@ session_start();
 $db = new Database();
 $user = new User($db);
 
+$department_id = $_SESSION['department_id'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $date_absent = clean_input(($_POST['date_absent']));
@@ -113,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <div class="subject-container">
     <a class="subject-title">Subjects</a>
     <?php
-        $array = $user->get_course();
+        $array = $user->get_course($department_id);
         $list = $user->get_prof();
         $reasons = $user->get_reasons();
         if(empty($array)) { ?>

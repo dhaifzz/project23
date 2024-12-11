@@ -75,6 +75,7 @@ class user {
                 $_SESSION['middle_name'] = $data['middle_name'];
                 $_SESSION['name'] = $data['name'];
                 $_SESSION['student_id'] = $data['student_id'];
+                $_SESSION['department_id'] = $data['department_id'];
 
                 return true; 
             }
@@ -98,23 +99,27 @@ class user {
         return $data;
     }
 
-    function get_section(){
-        $sql = "SELECT * FROM sections";
+    // function get_section(){
+    //     $sql = "SELECT * FROM sections";
 
-        $query = $this->pdo->prepare($sql);
+    //     $query = $this->pdo->prepare($sql);
 
-        $data = null;
+    //     $data = null;
 
-        if($query->execute()) {
-            $data = $query->fetchAll();
-        }
-        return $data;
-    }
+    //     if($query->execute()) {
+    //         $data = $query->fetchAll();
+    //     }
+    //     return $data;
+    // }
     
-    function get_course() {
-        $sql = "SELECT * FROM course";
+    function get_course($department_id) {
+        $sql = "SELECT * FROM course 
+        LEFT JOIN department ON course.department_id = department.id
+        WHERE department.id = :department_id";
 
         $query = $this->pdo->prepare($sql);
+
+        $query->bindParam(':department_id', $department_id);
 
         $data = null;
 

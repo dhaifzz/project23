@@ -47,13 +47,13 @@ $array = $user->get_course();
         </div>
         <ul class="sidebar-icons">
     <li>
-        <a href="../professors_view/professors.php">
+        <a href="../professor-view/professors.php">
             <i class="fa-solid fa-house-chimney-user"></i>
             <span class="nav-item">Home</span>
         </a>
     </li>
     <li>
-        <a href="../professors_view/subProfs.php">
+        <a href="../professor-view/subProfs.php">
             <i class="fa-solid fa-inbox"></i>
             <span class="nav-item">Submissions</span>
         </a>
