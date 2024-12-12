@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <a class="subject-title">Subjects</a>
     <?php
         $array = $user->get_course($department_id);
-        $list = $user->get_prof();
+        $list = $user->get_prof($department_id);
         $reasons = $user->get_reasons();
         if(empty($array)) { ?>
         <div>

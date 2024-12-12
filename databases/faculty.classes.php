@@ -27,6 +27,9 @@ class faculty {
                 $_SESSION['last_name'] = $data['last_name'];
                 $_SESSION['first_name'] = $data['first_name'];
                 $_SESSION['middle_name'] = $data['middle_name'];
+                $_SESSION['department_id'] = $data['department_id'];
+                $_SESSION['user_type'] = $data['user_type'];
+                $_SESSION['year_level'] = $data['year_level'];
 
                 return true; 
             }
@@ -65,7 +68,7 @@ class faculty {
         $sql = "SELECT * FROM professors
         JOIN users ON professors.user_id = users.ids
         WHERE email = :email
-        LIMIT 1;";
+        LIMIT 1";
 
         $query = $this->pdo->prepare($sql);
 
@@ -79,6 +82,9 @@ class faculty {
                 $_SESSION['last_name'] = $data['last_name'];
                 $_SESSION['first_name'] = $data['first_name'];
                 $_SESSION['middle_name'] = $data['middle_name'];
+                $_SESSION['department_id'] = $data['department_id'];
+                $_SESSION['user_type'] = $data['user_type'];
+                $_SESSION['ID'] = $data['ID'];
 
                 return true; 
             }
@@ -88,7 +94,9 @@ class faculty {
     }
 
     function get_type($id){
-        $sql = "SELECT user_type FROM users WHERE ids = :id";
+        $sql = "SELECT name FROM department
+        LEFT JOIN users ON department.id = users.department_id 
+        WHERE ids = :id";
 
         $query = $this->pdo->prepare($sql);
 
@@ -132,14 +140,17 @@ class faculty {
         return $data;
     }
 
-    function get_course() {
-        $sql = "SELECT name, acronym, COUNT(excuse_letter.id) AS total FROM course 
-            LEFT JOIN excuse_letter ON course.id = excuse_letter.course_id
-            GROUP BY course.id, name, acronym 
-            ORDER BY total DESC";
+    function get_course($id, $prof_id) {
+        $sql = "SELECT course.name, acronym, COUNT(excuse_letter.id) AS total FROM course 
+        LEFT JOIN excuse_letter ON course.id = excuse_letter.course_id AND excuse_letter.prof_id = :prof_id
+        LEFT JOIN department ON course.department_id = department.id
+        WHERE course.department_id = :id
+        GROUP BY course.id, course.name, acronym 
+        ORDER BY total DESC";
 
         $query = $this->pdo->prepare($sql);
-
+        $query->bindParam(":id", $id); 
+        $query->bindParam(":prof_id", $prof_id); 
         $data = null;
 
         if($query->execute()) {
@@ -148,4 +159,49 @@ class faculty {
         return $data;
     }
     
+    function get_excuse_letters($subject, $prof_id) {
+        $sql = "SELECT DISTINCT CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS name, date_submitted, date_absent, comment, sections.name as course, reason.type, excuse_letter
+        FROM excuse_letter 
+        LEFT JOIN course ON excuse_letter.course_id = course.id
+        LEFT JOIN student ON excuse_letter.student_id = student.student_id
+        LEFT JOIN reason ON excuse_letter.reason_id = reason.id
+        LEFT JOIN sections ON student.sections_id = sections.id
+        LEFT JOIN users ON student.user_id = users.ids
+        WHERE (course.name = :course_name) AND (excuse_letter.prof_id = :prof_id)";
+
+        $query = $this->pdo->prepare($sql);
+        $query->bindParam(":course_name", $subject); 
+        $query->bindParam(":prof_id", $prof_id); 
+        $data = null;
+
+        if($query->execute()) {
+            $data = $query->fetchAll();
+        }
+        return $data;
+    }
+
+    function get_adviser_excuse_letter($department_id){
+        $sql = "SELECT DISTINCT CONCAT(stud_user.last_name, ', ', stud_user.first_name, IFNULL(CONCAT(' ', stud_user.middle_name), '')) AS student_name, sections.name, CONCAT(prof_user.last_name, ', ', prof_user.first_name, IFNULL(CONCAT(' ', prof_user.middle_name), '')) AS professor_name, date_absent, date_submitted, comment, reason.type, excuse_letter, approval.approved_adviser
+        FROM excuse_letter
+        JOIN student ON excuse_letter.student_id = student.student_id
+        JOIN sections ON student.sections_id = sections.id
+        JOIN reason ON excuse_letter.reason_id = reason.id
+        JOIN users AS stud_user ON student.user_id = stud_user.ids
+        JOIN users AS prof_user ON excuse_letter.prof_id = prof_user.ids
+        JOIN adviser ON sections.year_level = adviser.year_level
+        JOIN department ON sections.department_id = department.id
+        JOIN approval ON approval.excuse_letter_id = excuse_letter.id
+        WHERE (department.id = :department_id) AND (sections.year_level = adviser.year_level)";
+
+        $query = $this->pdo->prepare($sql);
+
+        $query->bindParam(":department_id", $department_id); 
+
+        $data = null;
+
+        if($query->execute()) {
+            $data = $query->fetchAll();
+        }
+        return $data;
+    }
 }

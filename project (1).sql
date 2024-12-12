@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 11, 2024 at 10:28 PM
+-- Generation Time: Dec 12, 2024 at 12:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,22 +50,25 @@ INSERT INTO `adviser` (`id`, `user_id`, `year_level`, `date_joined`) VALUES
 CREATE TABLE `approval` (
   `id` int(11) NOT NULL,
   `excuse_letter_id` int(11) NOT NULL,
-  `approved_adviser` int(11) DEFAULT NULL,
-  `approved_guidance` int(11) DEFAULT NULL
+  `noted_adviser` int(11) DEFAULT NULL,
+  `noted_guidance` int(11) DEFAULT NULL,
+  `approved_adviser` tinyint(1) DEFAULT NULL,
+  `approved_guidance` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `approval`
 --
 
-INSERT INTO `approval` (`id`, `excuse_letter_id`, `approved_adviser`, `approved_guidance`) VALUES
-(1, 18, NULL, NULL),
-(2, 34, NULL, NULL),
-(3, 35, NULL, NULL),
-(4, 36, NULL, NULL),
-(5, 45, NULL, NULL),
-(6, 46, NULL, NULL),
-(7, 47, NULL, NULL);
+INSERT INTO `approval` (`id`, `excuse_letter_id`, `noted_adviser`, `noted_guidance`, `approved_adviser`, `approved_guidance`) VALUES
+(1, 18, NULL, NULL, NULL, NULL),
+(2, 34, NULL, NULL, NULL, NULL),
+(3, 35, NULL, NULL, NULL, NULL),
+(4, 36, NULL, NULL, NULL, NULL),
+(5, 45, NULL, NULL, NULL, NULL),
+(6, 46, NULL, NULL, NULL, NULL),
+(7, 47, NULL, NULL, NULL, NULL),
+(8, 48, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -99,17 +102,18 @@ INSERT INTO `course` (`id`, `name`, `acronym`, `department_id`, `created_at`, `l
 
 CREATE TABLE `department` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `type` enum('CS','IT','ACT','') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `department`
 --
 
-INSERT INTO `department` (`id`, `name`) VALUES
-(1, 'Computer Science'),
-(2, 'Information Technology'),
-(3, 'Associate in Computer Technology');
+INSERT INTO `department` (`id`, `name`, `type`) VALUES
+(1, 'Computer Science', 'CS'),
+(2, 'Information Technology', 'IT'),
+(3, 'Associate in Computer Technology', 'ACT');
 
 -- --------------------------------------------------------
 
@@ -134,13 +138,14 @@ CREATE TABLE `excuse_letter` (
 --
 
 INSERT INTO `excuse_letter` (`id`, `excuse_letter`, `comment`, `prof_id`, `date_submitted`, `date_absent`, `course_id`, `student_id`, `reason_id`) VALUES
-(18, 0x433a5c78616d70705c6874646f63735c70726f6a6563745c73747564656e742d766965772f75706c6f6164732f73637265656e73686f743033342e6a7067, 'ddddd', 17, '2024-12-11', '2024-11-01', 1, 3, 2),
-(34, 0x73637265656e73686f743030332e6a7067, 'sdsds', 16, '2024-11-30', '2024-11-08', 1, 3, 1),
-(35, 0x73637265656e73686f743030352e6a7067, 'rfdred', 17, '2024-12-02', '2024-12-11', 1, 3, 2),
-(36, 0x73637265656e73686f743030332e6a7067, 'wesdfwe', 16, '2024-12-04', '2024-11-15', 1, 3, 1),
-(45, 0x73637265656e73686f743030342e6a7067, 'weew', 18, '2024-12-11', '2024-11-15', 1, 3, 2),
-(46, 0x73637265656e73686f743032372e6a7067, 'wewe', 19, '2024-12-11', '2024-12-06', 1, 3, 2),
-(47, 0x73637265656e73686f743030342e6a7067, 'iioyui', 17, '2024-12-11', '2024-12-06', 3, 3, 1);
+(18, 0x433a5c78616d70705c6874646f63735c70726f6a6563745c73747564656e742d766965772f75706c6f6164732f73637265656e73686f743033342e6a7067, 'ddddd', 1, '2024-12-11', '2024-11-01', 1, 3, 2),
+(34, 0x73637265656e73686f743030332e6a7067, 'sdsds', 4, '2024-11-30', '2024-11-08', 1, 3, 1),
+(35, 0x73637265656e73686f743030352e6a7067, 'rfdred', 4, '2024-12-02', '2024-12-11', 1, 3, 2),
+(36, 0x73637265656e73686f743030332e6a7067, 'wesdfwe', 1, '2024-12-04', '2024-11-15', 1, 3, 1),
+(45, 0x73637265656e73686f743030342e6a7067, 'weew', 1, '2024-12-11', '2024-11-15', 1, 3, 2),
+(46, 0x73637265656e73686f743032372e6a7067, 'wewe', 1, '2024-12-11', '2024-12-06', 1, 3, 2),
+(47, 0x73637265656e73686f743030342e6a7067, 'iioyui', 4, '2024-12-11', '2024-12-06', 3, 1, 1),
+(48, 0x73637265656e73686f743033302e6a7067, 'werdwe', 6, '2024-12-12', '2024-12-06', 2, 4, 2);
 
 -- --------------------------------------------------------
 
@@ -204,7 +209,6 @@ CREATE TABLE `sections` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `year_level` int(11) NOT NULL,
-  `type` enum('CS','IT','ACT','') NOT NULL,
   `department_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -212,31 +216,12 @@ CREATE TABLE `sections` (
 -- Dumping data for table `sections`
 --
 
-INSERT INTO `sections` (`id`, `name`, `year_level`, `type`, `department_id`) VALUES
-(1, 'BSCS-3A', 3, 'CS', 1),
-(2, 'BSCS-2B', 2, 'CS', 1),
-(3, 'BSIT-2A', 2, 'IT', 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sem/sy`
---
-
-CREATE TABLE `sem/sy` (
-  `id` int(11) NOT NULL,
-  `SY` varchar(12) NOT NULL,
-  `SEM` enum('1st Sem','2nd Sem','','') NOT NULL,
-  `year_level` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `sem/sy`
---
-
-INSERT INTO `sem/sy` (`id`, `SY`, `SEM`, `year_level`) VALUES
-(1, '2024/2025', '1st Sem', 3),
-(2, '2024/2025', '2nd Sem', 3);
+INSERT INTO `sections` (`id`, `name`, `year_level`, `department_id`) VALUES
+(1, 'BSCS-3A', 3, 1),
+(2, 'BSCS-2B', 2, 1),
+(3, 'BSIT-2A', 2, 2),
+(4, 'BSCS-4A', 4, 1),
+(5, 'BSCS-1A', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -287,12 +272,12 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`ids`, `email`, `password`, `last_name`, `first_name`, `middle_name`, `created_at`, `last_updated`, `user_type`, `department_id`) VALUES
 (8, 'jusonneiljam@gmail.com', '$2y$10$0rReBIyHrLJ/0iy96ER9F.44Tt46U1f8T0PuaT/xo9DjnEX4Mwb.6', 'Juson', 'Neil Jam', NULL, '2024-11-25 06:23:17', '2024-12-10 09:32:28', 'Student', 1),
 (9, 'neil', '$2y$10$0zXduaxnmMDXJlDdUIv7qukkRSZwGy1XywTRXTmRVXtWxo10ATIbC', 'Juson', 'Neil Jam', NULL, '2024-11-25 06:25:20', '2024-12-11 16:38:28', 'Student', 1),
-(10, 'jusonmarodel@gmail.com', '$2y$10$1tx1fqmhTijFenjZeo5y2.ujE/pzaLHNDSrtSTWju.kPwzk1eJO7W', 'Juson', 'Neil Jam', NULL, '2024-11-25 15:00:19', '2024-12-10 09:32:34', 'Student', 1),
+(10, 'jusonmarodel@gmail.com', '$2y$10$1tx1fqmhTijFenjZeo5y2.ujE/pzaLHNDSrtSTWju.kPwzk1eJO7W', 'Juson', 'Neil Jam', NULL, '2024-11-25 15:00:19', '2024-12-12 07:41:03', 'Student', 2),
 (11, '09951491869', '$2y$10$D4njwZSxqaf3gnEJTDMr5OYdX3ld3zXNowvhTVTtY6T9ELj/QLaEC', 'Juson', 'Neil Jam', 'J', '2024-11-25 21:05:54', '2024-12-10 09:32:38', 'Student', 1),
-(16, 'dap@wmsu.com', '$2y$10$d7VMjzAeUll38P.uGHLOsOQ2DvnHCkmux4.4YFbhm1/KTN3XBbSG2', 'dsd', 'Dap', 'Y', '2024-11-26 08:33:13', '2024-12-10 11:55:47', 'Professor', 1),
+(16, 'dap@wmsu.com', '$2y$10$d7VMjzAeUll38P.uGHLOsOQ2DvnHCkmux4.4YFbhm1/KTN3XBbSG2', 'dsd', 'Dap', 'Y', '2024-11-26 08:33:13', '2024-12-12 10:40:59', 'Professor', 1),
 (17, 'dapp@wmsu.com', '$2y$10$hiHqvv5EC39/Tbh5jM1yyuSSbu4zkkBbftQ40HUmd3k4ExUwPemKO', 'pIEDAD', 'gERALDINE', 'tIMONEL', '2024-11-26 15:55:47', '2024-12-10 11:55:50', 'Professor', 1),
-(18, 'faculty@wmsu.com', '$2y$10$oMc0YB6hktWmU3a29bm0iOf2v/S6X9nwcSTiQxOItbWEvR8nKJPSO', 'Juson', 'gERALDINE', 'y', '2024-11-29 02:34:54', '2024-12-10 13:50:39', 'Adviser', 1),
-(19, 'jusonmarodel@gmail.con', '$2y$10$6xO6g4Pkqjq9XL8UvzJeoeO8tiIWWm6JFNX.04OXktoodfQ7modW.', 'dsd', 'gERALDINE', 'tIMONEL', '2024-12-02 03:35:30', '2024-12-10 11:55:53', 'Professor', 3);
+(18, 'faculty@wmsu.com', '$2y$10$oMc0YB6hktWmU3a29bm0iOf2v/S6X9nwcSTiQxOItbWEvR8nKJPSO', 'Juson', 'gERALDINE', 'y', '2024-11-29 02:34:54', '2024-12-12 07:21:13', 'Adviser', 1),
+(19, 'jusonmarodel@gmail.con', '$2y$10$6xO6g4Pkqjq9XL8UvzJeoeO8tiIWWm6JFNX.04OXktoodfQ7modW.', 'dsd', 'gERALDINE', 'tIMONEL', '2024-12-02 03:35:30', '2024-12-12 10:44:41', 'Professor', 2);
 
 --
 -- Indexes for dumped tables
@@ -312,8 +297,8 @@ ALTER TABLE `adviser`
 ALTER TABLE `approval`
   ADD PRIMARY KEY (`id`),
   ADD KEY `excuse_letter_id` (`excuse_letter_id`),
-  ADD KEY `approved_adviser` (`approved_adviser`),
-  ADD KEY `approved_guidance` (`approved_guidance`);
+  ADD KEY `approved_adviser` (`noted_adviser`),
+  ADD KEY `approved_guidance` (`noted_guidance`);
 
 --
 -- Indexes for table `course`
@@ -369,13 +354,6 @@ ALTER TABLE `sections`
   ADD KEY `department_id` (`department_id`);
 
 --
--- Indexes for table `sem/sy`
---
-ALTER TABLE `sem/sy`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `year_level` (`year_level`);
-
---
 -- Indexes for table `student`
 --
 ALTER TABLE `student`
@@ -398,13 +376,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `adviser`
 --
 ALTER TABLE `adviser`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `approval`
 --
 ALTER TABLE `approval`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `course`
@@ -422,7 +400,7 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT for table `excuse_letter`
 --
 ALTER TABLE `excuse_letter`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `guidance`
@@ -446,13 +424,7 @@ ALTER TABLE `reason`
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `sem/sy`
---
-ALTER TABLE `sem/sy`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student`
@@ -482,8 +454,8 @@ ALTER TABLE `adviser`
 --
 ALTER TABLE `approval`
   ADD CONSTRAINT `approval_ibfk_1` FOREIGN KEY (`excuse_letter_id`) REFERENCES `excuse_letter` (`id`),
-  ADD CONSTRAINT `approval_ibfk_2` FOREIGN KEY (`approved_adviser`) REFERENCES `adviser` (`id`),
-  ADD CONSTRAINT `approval_ibfk_3` FOREIGN KEY (`approved_guidance`) REFERENCES `guidance` (`id`);
+  ADD CONSTRAINT `approval_ibfk_2` FOREIGN KEY (`noted_adviser`) REFERENCES `adviser` (`id`),
+  ADD CONSTRAINT `approval_ibfk_3` FOREIGN KEY (`noted_guidance`) REFERENCES `guidance` (`id`);
 
 --
 -- Constraints for table `course`
@@ -498,7 +470,7 @@ ALTER TABLE `excuse_letter`
   ADD CONSTRAINT `excuse_letter_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
   ADD CONSTRAINT `excuse_letter_ibfk_3` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`),
   ADD CONSTRAINT `excuse_letter_ibfk_4` FOREIGN KEY (`reason_id`) REFERENCES `reason` (`id`),
-  ADD CONSTRAINT `excuse_letter_ibfk_5` FOREIGN KEY (`prof_id`) REFERENCES `users` (`ids`);
+  ADD CONSTRAINT `excuse_letter_ibfk_5` FOREIGN KEY (`prof_id`) REFERENCES `professors` (`ID`);
 
 --
 -- Constraints for table `guidance`
@@ -517,12 +489,6 @@ ALTER TABLE `professors`
 --
 ALTER TABLE `sections`
   ADD CONSTRAINT `sections_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`);
-
---
--- Constraints for table `sem/sy`
---
-ALTER TABLE `sem/sy`
-  ADD CONSTRAINT `sem/sy_ibfk_1` FOREIGN KEY (`year_level`) REFERENCES `sections` (`year_level`);
 
 --
 -- Constraints for table `student`

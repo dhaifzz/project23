@@ -9,9 +9,11 @@ session_start();
 $db = new Database();
 $user = new faculty($db);
 
-$id = $_SESSION['ids'];
-$get_type = $user->get_type($id);
-$array = $user->get_course();
+$id = $_SESSION['department_id'];
+$prof_id = $_SESSION['ID'];
+// $get_type = $user->get_type();
+$array = $user->get_course($id, $prof_id);
+
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +92,7 @@ $array = $user->get_course();
     <img src="/nexuse/images/therock.png" alt="User Image" class="profile-image">
     <div class="profile-info">
         <h4 class="profile-name" name="name"><?=$_SESSION['last_name'] . ', ' . $_SESSION['first_name'] . ' ' . (!empty($_SESSION['middle_name']) ? $_SESSION['middle_name'] : '') ?></h4>
-        <span class="profile-class"><?=clean_input($get_type)?></span>
+        <span class="profile-class"><?=clean_input($_SESSION['user_type'])?></span>
     </div>
   </div>
 

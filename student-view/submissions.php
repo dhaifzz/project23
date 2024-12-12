@@ -9,8 +9,9 @@ $db = new Database();
 $user = new User($db);
 
 $id = $_SESSION['ids'];
+$department_id = $_SESSION['department_id'];
 $submissions = $user->excuse_letters($id);
-$list = $user->get_prof();
+$list = $user->get_prof($department_id);
 $reasons = $user->get_reasons();
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {

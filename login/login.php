@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 break;
             case 'Adviser':
                 $faculty->get_adviser($username);
-                header('Location: ../professor-view/faculty.php');
+                header('Location: ../adviser-view/adviser.php');
                 break;
             case 'Professor':
                 $faculty->get_prof($username);

@@ -176,10 +176,14 @@ class user {
         return $query->execute();
     }
 
-    function get_prof() {
-        $sql = "SELECT * FROM users WHERE user_type IN ('Professor', 'Adviser', 'Guidance')";
+    function get_prof($department_id) {
+        $sql = "SELECT * FROM users 
+        JOIN department ON department.id = users.department_id
+        WHERE (department.id = :department_id) AND (user_type LIKE 'Professor')";
 
         $query = $this->pdo->prepare($sql);
+
+        $query->bindParam(':department_id', $department_id);
 
         $data = null;
 
@@ -213,8 +217,9 @@ class user {
         LEFT JOIN course ON excuse_letter.course_id = course.id 
         LEFT JOIN reason ON excuse_letter.reason_id = reason.id
         LEFT JOIN student ON excuse_letter.student_id = student.student_id
-        LEFT JOIN users ON excuse_letter.prof_id = users.ids
-        WHERE (student.user_id = :user_id) AND (users.ids = excuse_letter.prof_id)";
+        LEFT JOIN professors ON excuse_letter.prof_id = professors.ID
+        LEFT JOIN users ON professors.user_id = users.ids
+        WHERE (student.user_id = :user_id) AND (professors.ID = excuse_letter.prof_id)";
         
         $query = $this->pdo->prepare($sql);
 
