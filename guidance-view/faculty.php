@@ -91,7 +91,7 @@ $array = $user->get_dept();
             <img src="/excuse-site/images/lebron.jpg" alt="User Image" class="profile-image">
             <div class="profile-info">
                 <h4 class="profile-name" name="name"><?=$_SESSION['last_name'] . ', ' . $_SESSION['first_name'] . ' ' . (!empty($_SESSION['middle_name']) ? $_SESSION['middle_name'] : '') ?></h4>
-                <span class="profile-class"><?=clean_input($get_type)?></span>
+                <span class="profile-class"><?=$_SESSION['user_type']?></span>
             </div>
         </div>
 

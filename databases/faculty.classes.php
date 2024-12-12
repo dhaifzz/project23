@@ -39,10 +39,10 @@ class faculty {
     }
 
     function get_guidance($username) {
-        $sql = "SELECT * FROM adviser
-        JOIN users ON adviser.user_id = users.ids
+        $sql = "SELECT * FROM guidance
+        JOIN users ON guidance.user_id = users.ids
         WHERE email = :email
-        LIMIT 1;";
+        LIMIT 1";
 
         $query = $this->pdo->prepare($sql);
 
@@ -56,6 +56,7 @@ class faculty {
                 $_SESSION['last_name'] = $data['last_name'];
                 $_SESSION['first_name'] = $data['first_name'];
                 $_SESSION['middle_name'] = $data['middle_name'];
+                $_SESSION['user_type'] = $data['user_type'];
 
                 return true; 
             }
@@ -110,11 +111,13 @@ class faculty {
     }
 
     function get_dept() {
-        $sql = "SELECT department.name as Name, COALESCE(COUNT(excuse_letter.id), 0) as Count
+        $sql = "SELECT department.name as Name, COALESCE(COUNT(DISTINCT approval.noted_adviser), 0) as Count
         FROM department
         LEFT JOIN sections ON department.id = sections.department_id
         LEFT JOIN student ON student.sections_id = sections.id
         LEFT JOIN excuse_letter ON student.student_id = excuse_letter.student_id
+        LEFT JOIN approval ON approval.excuse_letter_id = excuse_letter.id AND approval.approved_adviser = 1
+        LEFT JOIN adviser ON approval.noted_adviser = adviser.id
         GROUP BY department.id, Name ";
 
         $query = $this->pdo->prepare($sql);
@@ -187,7 +190,8 @@ class faculty {
         JOIN sections ON student.sections_id = sections.id
         JOIN reason ON excuse_letter.reason_id = reason.id
         JOIN users AS stud_user ON student.user_id = stud_user.ids
-        JOIN users AS prof_user ON excuse_letter.prof_id = prof_user.ids
+        JOIN professors ON excuse_letter.prof_id = professors.ID
+        JOIN users AS prof_user ON professors.user_id = prof_user.ids
         JOIN adviser ON sections.year_level = adviser.year_level
         JOIN department ON sections.department_id = department.id
         JOIN approval ON approval.excuse_letter_id = excuse_letter.id

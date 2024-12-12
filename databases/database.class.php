@@ -9,7 +9,7 @@ class user {
         $this->pdo = $db->connect();
     }
 
-    function register($email, $password, $ln, $fn, $mn, $section) {
+    function register($email, $password, $ln, $fn, $mn, $user_type, $department) {
         $sql = "SELECT * FROM users WHERE email = :email";
         $checkUser = $this->pdo->prepare($sql);
         $checkUser->bindParam(":email", $email);
@@ -17,7 +17,7 @@ class user {
         
 
         if ($checkUser->rowCount() == 0) {
-            $sql = "INSERT INTO users (email, password, last_name, first_name, middle_name, created_at, section_id) VALUES (:email, :password, :last_name, :first_name, :middle_name, :created_at, :section_id)";
+            $sql = "INSERT INTO users (email, password, last_name, first_name, middle_name, created_at, user_type, department_id) VALUES (:email, :password, :last_name, :first_name, :middle_name, :created_at, :user_type, :department_id)";
             
             $query = $this->pdo->prepare($sql);
             $query->bindParam(":email", $email);  
@@ -28,7 +28,8 @@ class user {
             $query->bindParam(":middle_name", $mn);
             $t = date("Y-m-d H:i:s");
             $query->bindParam(":created_at", $t);
-            $query->bindParam(":section_id", $section);
+            $query->bindParam(":user_type", $user_type);
+            $query->bindParam(":department_id", $department);
             
             return $query->execute();
 

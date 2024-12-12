@@ -13,7 +13,7 @@
 
     $db = new Database();
     $user = new User($db);
-    $array = $user->get_section();
+    // $array = $user->get_section();
 
     $emailErr = $passwordErr = '';
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -22,7 +22,8 @@
         $ln = clean_input(($_POST['last_name']));
         $fn = clean_input(($_POST['first_name']));
         $mn = clean_input(($_POST['middle_name']));
-        $section = clean_input(($_POST['section']));
+        $user_type = clean_input($_POST['user_type']);
+        $department = clean_input(($_POST['department']));
 
         if(empty($email)) {
             $emailErr = "Email is Required";
@@ -33,12 +34,9 @@
         if(empty($mn)) {
             $mn = null;
         }
-        if(empty($section)) {
-            $section = null;
-        }
 
         if(empty($emailErr) && empty($passwordErr)) {
-            if ($user->register($email, $password, $ln, $fn, $mn, $section)) {
+            if ($user->register($email, $password, $ln, $fn, $mn, $user_type, $department)) {
                 $_SESSION['success'] = 'Account created successfully! You can now log in.';
                 header('Location: login.php');
                 exit();
@@ -70,14 +68,14 @@
         <label for="middle_name">Middle Name</label>
         <input type="text" name="middle_name" id="middle_name"><br>
 
+        <label for="user_type">User Type</label>
+        <select name="user_type" id="user_type">
+            <option value="Guidance">Guidance</option>
+        </select>
+
         <label for="section">Section</label>
-        <select name="section" id="section">
-            <option value="">Section</option>
-            <?php foreach($array as $arr) {?>
-                <option value="<?=$arr['id']?>"><?=$arr['name']?></option>
-            <?php
-            }
-            ?>
+        <select name="department" id="section">
+            <option value="1">1</option>
         </select>
         <br>
         <button type="submit" id="register" name="register">Register</button>
