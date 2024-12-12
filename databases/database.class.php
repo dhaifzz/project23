@@ -178,8 +178,9 @@ class user {
     }
 
     function get_prof($department_id) {
-        $sql = "SELECT * FROM users 
+        $sql = "SELECT *, professors.ID as id FROM users 
         JOIN department ON department.id = users.department_id
+        JOIN professors ON professors.user_id = users.ids
         WHERE (department.id = :department_id) AND (user_type LIKE 'Professor')";
 
         $query = $this->pdo->prepare($sql);

@@ -1,25 +1,19 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Dec 12, 2024 at 12:35 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
 --
 -- Database: `project`
 --
+CREATE DATABASE project;
+USE project;
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin`
+--
+
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `date_started` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -68,7 +62,8 @@ INSERT INTO `approval` (`id`, `excuse_letter_id`, `noted_adviser`, `noted_guidan
 (5, 45, NULL, NULL, NULL, NULL),
 (6, 46, NULL, NULL, NULL, NULL),
 (7, 47, NULL, NULL, NULL, NULL),
-(8, 48, NULL, NULL, NULL, NULL);
+(8, 48, NULL, NULL, NULL, NULL),
+(9, 52, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -80,19 +75,17 @@ CREATE TABLE `course` (
   `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `acronym` varchar(20) NOT NULL,
-  `department_id` int(11) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `last_updated` datetime DEFAULT NULL
+  `department_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `course`
 --
 
-INSERT INTO `course` (`id`, `name`, `acronym`, `department_id`, `created_at`, `last_updated`) VALUES
-(1, 'Bachelor of Computing Science', 'BSCS', 1, '2024-10-29 12:49:47', '0000-00-00 00:00:00'),
-(2, 'Bachelor of Information Management', 'BSIT', 2, '2024-10-29 12:51:04', NULL),
-(3, 'Mobile Application Development', 'MAD', 1, '0000-00-00 00:00:00', NULL);
+INSERT INTO `course` (`id`, `name`, `acronym`, `department_id`) VALUES
+(1, 'Bachelor of Computing Science', 'BSCS', 1),
+(2, 'Bachelor of Information Management', 'BSIT', 2),
+(3, 'Mobile Application Development', 'MAD', 1);
 
 -- --------------------------------------------------------
 
@@ -126,6 +119,7 @@ CREATE TABLE `excuse_letter` (
   `excuse_letter` blob NOT NULL,
   `comment` text DEFAULT NULL,
   `prof_id` int(11) NOT NULL,
+  `prof_acknowledge` tinyint(1) DEFAULT NULL,
   `date_submitted` date NOT NULL,
   `date_absent` date NOT NULL,
   `course_id` int(11) NOT NULL,
@@ -137,15 +131,16 @@ CREATE TABLE `excuse_letter` (
 -- Dumping data for table `excuse_letter`
 --
 
-INSERT INTO `excuse_letter` (`id`, `excuse_letter`, `comment`, `prof_id`, `date_submitted`, `date_absent`, `course_id`, `student_id`, `reason_id`) VALUES
-(18, 0x433a5c78616d70705c6874646f63735c70726f6a6563745c73747564656e742d766965772f75706c6f6164732f73637265656e73686f743033342e6a7067, 'ddddd', 1, '2024-12-11', '2024-11-01', 1, 3, 2),
-(34, 0x73637265656e73686f743030332e6a7067, 'sdsds', 4, '2024-11-30', '2024-11-08', 1, 3, 1),
-(35, 0x73637265656e73686f743030352e6a7067, 'rfdred', 4, '2024-12-02', '2024-12-11', 1, 3, 2),
-(36, 0x73637265656e73686f743030332e6a7067, 'wesdfwe', 1, '2024-12-04', '2024-11-15', 1, 3, 1),
-(45, 0x73637265656e73686f743030342e6a7067, 'weew', 1, '2024-12-11', '2024-11-15', 1, 3, 2),
-(46, 0x73637265656e73686f743032372e6a7067, 'wewe', 1, '2024-12-11', '2024-12-06', 1, 3, 2),
-(47, 0x73637265656e73686f743030342e6a7067, 'iioyui', 4, '2024-12-11', '2024-12-06', 3, 1, 1),
-(48, 0x73637265656e73686f743033302e6a7067, 'werdwe', 6, '2024-12-12', '2024-12-06', 2, 4, 2);
+INSERT INTO `excuse_letter` (`id`, `excuse_letter`, `comment`, `prof_id`, `prof_acknowledge`, `date_submitted`, `date_absent`, `course_id`, `student_id`, `reason_id`) VALUES
+(18, 0x433a5c78616d70705c6874646f63735c70726f6a6563745c73747564656e742d766965772f75706c6f6164732f73637265656e73686f743033342e6a7067, 'ddddd', 4, NULL, '2024-12-12', '2024-11-01', 1, 3, 1),
+(34, 0x73637265656e73686f743030332e6a7067, 'sdsds', 4, NULL, '2024-11-30', '2024-11-08', 1, 3, 1),
+(35, 0x73637265656e73686f743030352e6a7067, 'rfdred', 4, NULL, '2024-12-02', '2024-12-11', 1, 3, 2),
+(36, 0x73637265656e73686f743030332e6a7067, 'wesdfwe', 1, NULL, '2024-12-04', '2024-11-15', 1, 3, 1),
+(45, 0x73637265656e73686f743030342e6a7067, 'weew', 1, NULL, '2024-12-11', '2024-11-15', 1, 3, 2),
+(46, 0x73637265656e73686f743032372e6a7067, 'wewe', 1, NULL, '2024-12-11', '2024-12-06', 1, 3, 2),
+(47, 0x73637265656e73686f743030342e6a7067, 'iioyui', 4, NULL, '2024-12-11', '2024-12-06', 3, 1, 1),
+(48, 0x73637265656e73686f743033302e6a7067, 'werdwe', 6, NULL, '2024-12-12', '2024-12-06', 2, 4, 2),
+(52, 0x73637265656e73686f743030392e6a7067, 'wqqqw', 4, NULL, '2024-12-12', '2024-12-07', 1, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -154,10 +149,18 @@ INSERT INTO `excuse_letter` (`id`, `excuse_letter`, `comment`, `prof_id`, `date_
 --
 
 CREATE TABLE `guidance` (
-  `id` int(11) NOT NULL,
+  `guidance_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `guidance_type` varchar(100) NOT NULL,
   `date_started` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `guidance`
+--
+
+INSERT INTO `guidance` (`guidance_id`, `user_id`, `guidance_type`, `date_started`) VALUES
+(1, 21, 'Academic', '2024-07-02');
 
 -- --------------------------------------------------------
 
@@ -221,7 +224,12 @@ INSERT INTO `sections` (`id`, `name`, `year_level`, `department_id`) VALUES
 (2, 'BSCS-2B', 2, 1),
 (3, 'BSIT-2A', 2, 2),
 (4, 'BSCS-4A', 4, 1),
-(5, 'BSCS-1A', 1, 1);
+(5, 'BSCS-1A', 1, 1),
+(6, 'BSIT-3A', 3, 2),
+(7, 'BSIT-1B', 1, 2),
+(8, 'BSIT-4B', 4, 2),
+(9, 'ACT-AD2', 2, 3),
+(10, 'ACT-AD1', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -262,7 +270,7 @@ CREATE TABLE `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_updated` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `user_type` enum('Student','Professor','Adviser','Guidance') DEFAULT NULL,
-  `department_id` int(11) NOT NULL
+  `department_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -277,11 +285,19 @@ INSERT INTO `users` (`ids`, `email`, `password`, `last_name`, `first_name`, `mid
 (16, 'dap@wmsu.com', '$2y$10$d7VMjzAeUll38P.uGHLOsOQ2DvnHCkmux4.4YFbhm1/KTN3XBbSG2', 'dsd', 'Dap', 'Y', '2024-11-26 08:33:13', '2024-12-12 10:40:59', 'Professor', 1),
 (17, 'dapp@wmsu.com', '$2y$10$hiHqvv5EC39/Tbh5jM1yyuSSbu4zkkBbftQ40HUmd3k4ExUwPemKO', 'pIEDAD', 'gERALDINE', 'tIMONEL', '2024-11-26 15:55:47', '2024-12-10 11:55:50', 'Professor', 1),
 (18, 'faculty@wmsu.com', '$2y$10$oMc0YB6hktWmU3a29bm0iOf2v/S6X9nwcSTiQxOItbWEvR8nKJPSO', 'Juson', 'gERALDINE', 'y', '2024-11-29 02:34:54', '2024-12-12 07:21:13', 'Adviser', 1),
-(19, 'jusonmarodel@gmail.con', '$2y$10$6xO6g4Pkqjq9XL8UvzJeoeO8tiIWWm6JFNX.04OXktoodfQ7modW.', 'dsd', 'gERALDINE', 'tIMONEL', '2024-12-02 03:35:30', '2024-12-12 10:44:41', 'Professor', 2);
+(19, 'jusonmarodel@gmail.con', '$2y$10$6xO6g4Pkqjq9XL8UvzJeoeO8tiIWWm6JFNX.04OXktoodfQ7modW.', 'dsd', 'gERALDINE', 'tIMONEL', '2024-12-02 03:35:30', '2024-12-12 10:44:41', 'Professor', 2),
+(21, 'gui@wmsu.com', '$2y$10$spGz7TFEFJRR67hX0E.MYuhVPZsD9ipcGfqXWv1yt3/HIMuFtRQsK', 'pIEDAD', 'Dap', 'Y', '2024-12-12 05:43:29', '2024-12-12 14:13:29', 'Guidance', NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `adviser`
@@ -329,7 +345,7 @@ ALTER TABLE `excuse_letter`
 -- Indexes for table `guidance`
 --
 ALTER TABLE `guidance`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`guidance_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
@@ -373,6 +389,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `adviser`
 --
 ALTER TABLE `adviser`
@@ -382,7 +404,7 @@ ALTER TABLE `adviser`
 -- AUTO_INCREMENT for table `approval`
 --
 ALTER TABLE `approval`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `course`
@@ -400,13 +422,13 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT for table `excuse_letter`
 --
 ALTER TABLE `excuse_letter`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `guidance`
 --
 ALTER TABLE `guidance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `guidance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `professors`
@@ -424,7 +446,7 @@ ALTER TABLE `reason`
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `student`
@@ -436,11 +458,17 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `ids` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `ids` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `admin`
+--
+ALTER TABLE `admin`
+  ADD CONSTRAINT `admin_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`ids`);
 
 --
 -- Constraints for table `adviser`
@@ -455,7 +483,7 @@ ALTER TABLE `adviser`
 ALTER TABLE `approval`
   ADD CONSTRAINT `approval_ibfk_1` FOREIGN KEY (`excuse_letter_id`) REFERENCES `excuse_letter` (`id`),
   ADD CONSTRAINT `approval_ibfk_2` FOREIGN KEY (`noted_adviser`) REFERENCES `adviser` (`id`),
-  ADD CONSTRAINT `approval_ibfk_3` FOREIGN KEY (`noted_guidance`) REFERENCES `guidance` (`id`);
+  ADD CONSTRAINT `approval_ibfk_3` FOREIGN KEY (`noted_guidance`) REFERENCES `guidance` (`guidance_id`);
 
 --
 -- Constraints for table `course`
@@ -504,6 +532,3 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`);
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

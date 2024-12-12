@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                      <select class="form-select scrollable-dropdown" id="Professor" name="Professor" required>
                         <option value="" disabled selected>Submit to:</option>
                         <?php foreach($list as $li) {?>
-                        <option value="<?=$li['ids']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
+                        <option value="<?=$li['ID']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
                         <?php
                         }
                         ?>
