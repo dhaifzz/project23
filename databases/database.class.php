@@ -113,9 +113,9 @@ class user {
     //     return $data;
     // }
     
-    function get_course($department_id) {
-        $sql = "SELECT * FROM course 
-        LEFT JOIN department ON course.department_id = department.id
+    function get_subject($department_id) {
+        $sql = "SELECT * FROM subject 
+        LEFT JOIN department ON subject.department_id = department.id
         WHERE department.id = :department_id";
 
         $query = $this->pdo->prepare($sql);
@@ -143,19 +143,18 @@ class user {
         return $data;
     }
 
-    function excuse($date_absent, $comment, $prof_id, $excuse_letter, $course_id, $student_id, $reason_id) {
-        $sql = "INSERT INTO excuse_letter (excuse_letter, comment, prof_id, date_submitted, date_absent, course_id, student_id, reason_id) VALUES 
-        (:excuse_letter, :comment, :prof_id, :date_submitted, :date_absent, :course_id, :student_id, :reason_id)";
+    function excuse($date_absent, $comment, $excuse_letter, $subject_id, $student_id, $reason_id) {
+        $sql = "INSERT INTO excuse_letter (excuse_letter, comment, date_submitted, date_absent, subject_id, student_id, reason_id) VALUES 
+        (:excuse_letter, :comment, :date_submitted, :date_absent, :subject, :student_id, :reason_id)";
         
         $query = $this->pdo->prepare($sql);
 
         $query->bindParam(":excuse_letter", $excuse_letter, PDO::PARAM_LOB);  
         $query->bindParam(":comment", $comment); 
-        $query->bindParam(":prof_id", $prof_id); 
         $query->bindParam(":date_absent", $date_absent);
         $t = date("Y-m-d");
         $query->bindParam(":date_submitted", $t);
-        $query->bindParam(":course_id", $course_id);
+        $query->bindParam(":subject", $subject_id);
         $query->bindParam(":student_id", $student_id);
         $query->bindParam(":reason_id", $reason_id);
 
@@ -216,12 +215,13 @@ class user {
     function excuse_letters($id) {
         $sql = "SELECT DISTINCT excuse_letter.id as id, CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS professors_name, acronym, date_absent, date_submitted, comment, type, excuse_letter
         FROM excuse_letter 
-        LEFT JOIN course ON excuse_letter.course_id = course.id 
+        LEFT JOIN subject ON excuse_letter.subject_id = subject.id
         LEFT JOIN reason ON excuse_letter.reason_id = reason.id
         LEFT JOIN student ON excuse_letter.student_id = student.student_id
-        LEFT JOIN professors ON excuse_letter.prof_id = professors.ID
+        LEFT JOIN prof_approval ON excuse_letter.id = prof_approval.excuse_letter_id
+        LEFT JOIN professors ON prof_approval.prof_id = professors.ID
         LEFT JOIN users ON professors.user_id = users.ids
-        WHERE (student.user_id = :user_id) AND (professors.ID = excuse_letter.prof_id)";
+        WHERE (student.user_id = :user_id) AND (professors.ID = prof_approval.prof_id)";
         
         $query = $this->pdo->prepare($sql);
 
@@ -259,6 +259,17 @@ class user {
         }   
 
        return $query->execute();
+    }
+
+    function prof($excuse_letter_id, $prof_id) {
+        $sql = "INSERT INTO prof_approval (excuse_letter_id, prof_id) VALUES (:excuse_letter_id, :prof_id)";
+
+        $query = $this->pdo->prepare($sql);
+
+        $query->bindParam(":excuse_letter_id", $excuse_letter_id);
+        $query->bindParam(":prof_id", $prof_id);
+
+        return $query->execute();
     }
 }
 ?>

@@ -84,7 +84,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <li>
         <a href="#">
             <i class="fa-solid fa-book"></i>
-            <span class="nav-item">Course</span>
+            <span class="nav-item">Subject</span>
         </a>
     </li>
     <li>
@@ -116,7 +116,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <img src="/excuse-site/images/pacman.jpg" alt="User Image" class="profile-image">
     <div class="profile-info">
         <h4 class="profile-name" name="name"><?=$_SESSION['last_name'] . ', ' . $_SESSION['first_name'] . ' ' . (!empty($_SESSION['middle_name']) ? $_SESSION['middle_name'] : '') ?></h4>
-        <span class="profile-class" name="course"><?=$_SESSION['name']?></span>
+        <span class="profile-class" name="subject"><?=$_SESSION['name']?></span>
     </div>
   </div>
 <div class="container mt-4">
@@ -275,7 +275,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p>Are you sure you want to delete this submission?</p>
                 <ul>
                     <li><strong>ID:</strong> <span id="deleteID"></span></li>
-                    <li><strong>Professor:</strong> <span id="deleteCourse"></span></li>
+                    <li><strong>Professor:</strong> <span id="deleteSubject"></span></li>
                     <li><strong>Date of Absent:</strong> <span id="deleteDateAbsent"></span></li>
                     <li><strong>Comment:</strong> <span id="deleteComment"></span></li>
                     <div class="text-center mt-3">
@@ -386,7 +386,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     const deleteButtons = document.querySelectorAll('.delete-button');
 
     const deleteId = document.getElementById('id');
-    const deleteCourseElement = document.getElementById('deleteCourse');
+    const deleteSubjectElement = document.getElementById('deleteSubject');
     const deleteDateAbsentElement = document.getElementById('deleteDateAbsent');
     const deleteCommentElement = document.getElementById('deleteComment');
     const deletePhotoElement = document.getElementById('deletePhoto');
@@ -397,12 +397,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
-            const course = this.getAttribute('data-course');
+            const subject = this.getAttribute('data-subject');
             const dateAbsent = this.getAttribute('data-date-absent');
             const comment = this.getAttribute('data-comment');
 
             // Log data attributes to confirm they're being fetched
-            console.log("ID:", id, "Course:", course, "Date Absent:", dateAbsent, "Comment:", comment);
+            console.log("ID:", id, "Subject:", subject, "Date Absent:", dateAbsent, "Comment:", comment);
 
             // Fetch the photo URL from the 'img' element in the same <tr>
             const photo = this.closest('tr').querySelector('.photo-thumbnail').getAttribute('src');
@@ -410,7 +410,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Populate the modal with the data
             deleteId.textContent = id;
-            deleteCourseElement.textContent = course;
+            deleteSubjectElement.textContent = subject;
             deleteDateAbsentElement.textContent = dateAbsent;
             deleteCommentElement.textContent = comment;
             deletePhotoElement.setAttribute('src', photo);
@@ -433,7 +433,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Perform additional actions here (e.g., send a request to the server to delete from the database)
             console.log('Deleted entry with details:', {
-                course: deleteCourseElement.textContent,
+                subject: deleteSubjectElement.textContent,
                 date_absent: deleteDateAbsentElement.textContent,
                 comment: deleteCommentElement.textContent,
                 photo: deletePhotoElement.getAttribute('src')

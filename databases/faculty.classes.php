@@ -190,7 +190,8 @@ class faculty {
         JOIN sections ON student.sections_id = sections.id
         JOIN reason ON excuse_letter.reason_id = reason.id
         JOIN users AS stud_user ON student.user_id = stud_user.ids
-        JOIN professors ON excuse_letter.prof_id = professors.ID
+        JOIN prof_approval ON excuse_letter.id = prof_approval.excuse_letter_id
+        JOIN professors ON prof_approval.prof_id = professors.ID
         JOIN users AS prof_user ON professors.user_id = prof_user.ids
         JOIN adviser ON sections.year_level = adviser.year_level
         JOIN department ON sections.department_id = department.id
