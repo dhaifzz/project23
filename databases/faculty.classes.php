@@ -144,11 +144,12 @@ class faculty {
     }
 
     function get_course($id, $prof_id) {
-        $sql = "SELECT course.name, acronym, COUNT(excuse_letter.id) AS total FROM course 
-        LEFT JOIN excuse_letter ON course.id = excuse_letter.course_id AND excuse_letter.prof_id = :prof_id
-        LEFT JOIN department ON course.department_id = department.id
-        WHERE course.department_id = :id
-        GROUP BY course.id, course.name, acronym 
+        $sql = "SELECT subject.name, acronym, COUNT(excuse_letter.id) AS total FROM subject 
+        LEFT JOIN excuse_letter ON subject.id = excuse_letter.subject_id AND excuse_letter.prof_id = :prof_id
+        LEFT JOIN department ON subject.department_id = department.id
+        LEFT JOIN approval ON excuse_letter.id = approval.excuse_letter_id
+        WHERE (subject.department_id = :id) AND (approval.approved_adviser = 1) AND (approval.approved_guidance = 1)
+        GROUP BY subject.id, subject.name, acronym 
         ORDER BY total DESC";
 
         $query = $this->pdo->prepare($sql);
@@ -196,7 +197,7 @@ class faculty {
         JOIN adviser ON sections.year_level = adviser.year_level
         JOIN department ON sections.department_id = department.id
         JOIN approval ON approval.excuse_letter_id = excuse_letter.id
-        WHERE (department.id = :department_id) AND (sections.year_level = adviser.year_level)";
+        WHERE (department.id = :department_id) AND (sections.year_level = adviser.year_level) AND (approval.approved_adviser = 'NULL')";
 
         $query = $this->pdo->prepare($sql);
 

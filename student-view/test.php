@@ -15,14 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $comment = clean_input($_POST['comment']);
     $prof_id = clean_input($_POST['Professor']);
     $excuse_letter = clean_input($_POST['excuse_letter']);
-    $subject_id = clean_input($_POST['subject']);
+    $course_id = clean_input($_POST['course']);
     $student_id = clean_input($_POST['student_id']);
     $reason_id = clean_input($_POST['Reason']);
 
-    $excuse_letter_id = $user->excuse($date_absent, $comment, $excuse_letter, $subject_id, $student_id, $reason_id);
+    $excuse_letter_id = $user->excuse($date_absent, $comment, $excuse_letter, $course_id, $student_id, $reason_id, $prof_id);
 
     $user->approval($excuse_letter_id);
-    $user->prof($excuse_letter_id, $prof_id);
 }
 ?>
 
@@ -108,14 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <img src="/excuse-site/images/pacman.jpg" alt="User Image" class="profile-image">
     <div class="profile-info">
         <h4 class="profile-name" name="name"><?=$_SESSION['last_name'] . ', ' . $_SESSION['first_name'] . ' ' . (!empty($_SESSION['middle_name']) ? $_SESSION['middle_name'] : '') ?></h4>
-        <span class="profile-class" name="subject"><?=$_SESSION['name']?></span>
+        <span class="profile-class" name="course"><?=$_SESSION['name']?></span>
     </div>
   </div>
 
   <div class="subject-container">
     <a class="subject-title">Subjects</a>
     <?php
-        $array = $user->get_subject($department_id);
+        $array = $user->get_course($department_id);
         $list = $user->get_prof($department_id);
         $reasons = $user->get_reasons();
         if(empty($array)) { ?>
@@ -135,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?=$arr['name']?>
     </div>
     <button class="letter-button" type="button" data-bs-toggle="modal" data-bs-target="#excuseLetterModal" 
-    data-subject-id="<?=$arr['id']?>" data-subject="<?=$arr['acronym']?>">Send a Letter</button>
+    data-subject="<?=$arr['acronym']?>">Send a Letter</button>
     </div>
  <!-- Excuse Letter -->
  <div class="modal fade" id="excuseLetterModal" tabindex="-1" aria-labelledby="excuseLetterModalLabel" aria-hidden="true">
@@ -167,8 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                  <div class="mb-3">
                      <label for="Reason" class="form-label">Reason:</label>
                      <select class="form-select scrollable-dropdown" id="Reason" name="Reason" required>
-                        <option value="" disabled selected>Reason of Absent:</option>
-                        <?php foreach($reasons as $reason) { ?>
+                        <option value="" disabled selected>Reason of Absence:</option>
+                        <?php foreach($reasons as $reason) {?>
                         <option value="<?=$reason['id']?>"><?=$reason['type']?></option>
                         <?php
                         }
@@ -184,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <label for="proof" class="form-label">Insert photo of any reliable documents/proof:</label>
                         <input type="file" class="form-control" id="proof" name="excuse_letter" accept="image/*">
                     </div>
-                        <input type="hidden" class="subject" id="subject" name="subject" value="<?=$arr['id'];?>">
+                        <input type="hidden" class="course" name="course" value="<?=$arr['id'];?>">
 
                         <input type="hidden" class="student_id" id="student_id" name="student_id" value="<?=$_SESSION['student_id'];?>">
                     <div class="modal-footer">
@@ -215,25 +214,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     backdrops.forEach(backdrop => backdrop.remove());
     document.body.classList.remove('modal-open'); // Unlocks scrolling.
 });
-    document.querySelectorAll('.letter-button').forEach(button => {
+document.querySelectorAll('.letter-button').forEach(button => {
     button.addEventListener('click', (event) => {
         const subjectName = event.currentTarget.getAttribute('data-subject');
-        const courseId = event.currentTarget.getAttribute('data-subject-id'); // Get the course ID
 
-        // Update the modal title dynamically with the subject name
-        const modalTitle = document.getElementById('excuseLetterModalLabel');
-        modalTitle.textContent = `${subjectName} | Excuse Letter Form`;
+        // Update modal title
+        document.getElementById('excuseLetterModalLabel').textContent = `${subjectName} | Excuse Letter Form`;
 
-        // Set the hidden input for course ID
-        const subjectInput = document.getElementById('subject');
-        subjectInput.value = courseId;
+        // Make AJAX request to fetch the course ID
+        fetch(`get_course_id.php?subject=${encodeURIComponent(subjectName)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the hidden course input
+                    const courseInput = document.querySelector('#excuseLetterForm .course');
+                    courseInput.value = data.course_id;
+                    console.log("Course ID:", data.course_id); // Debugging line
+                } else {
+                    console.error("Error fetching course ID");
+                }
+            });
 
-        // Initialize and show the modal
+        // Show the modal
         const excuseLetterModal = new bootstrap.Modal(document.getElementById('excuseLetterModal'));
         excuseLetterModal.show();
-        
     });
 });
+
 
     </script>
 </body>

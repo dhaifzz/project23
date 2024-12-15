@@ -84,7 +84,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <li>
         <a href="#">
             <i class="fa-solid fa-book"></i>
-            <span class="nav-item">Subject</span>
+            <span class="nav-item">Course</span>
         </a>
     </li>
     <li>
@@ -116,7 +116,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <img src="/excuse-site/images/pacman.jpg" alt="User Image" class="profile-image">
     <div class="profile-info">
         <h4 class="profile-name" name="name"><?=$_SESSION['last_name'] . ', ' . $_SESSION['first_name'] . ' ' . (!empty($_SESSION['middle_name']) ? $_SESSION['middle_name'] : '') ?></h4>
-        <span class="profile-class" name="subject"><?=$_SESSION['name']?></span>
+        <span class="profile-class" name="course"><?=$_SESSION['name']?></span>
     </div>
   </div>
 <div class="container mt-4">
@@ -160,7 +160,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     data-bs-toggle='modal' 
                                     data-bs-target='#excuseLetterModal' 
                                     data-id='<?=$submission['id']?>' 
-                                    data-course='<?=$submission['professors_name']?>' 
+                                    data-professor="<?=$submission['prof_id']?>"
+                                    data-reason="<?=$submission['reason_id']?>" 
                                     data-date-absent='<?=$submission['date_absent']?>' 
                                     data-comment='<?=$submission['comment']?>'>
                                    <i class='fa-regular fa-pen-to-square'></i>
@@ -170,6 +171,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                                      data-bs-target='#deleteModal' 
                                      data-id='<?=$submission['id']?>' 
                                      data-course='<?=$submission['professors_name']?>' 
+                                     data-reason="<?=$submission['type']?>"
                                      data-date-absent='<?=$submission['date_absent']?>' 
                                      data-comment='<?=$submission['comment']?>'>
                                  <i class='fa-regular fa-trash-can'></i>
@@ -198,7 +200,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                         <label for="professor" class="form-label">Professor:</label>
                         <select class="form-select" id="professor" name="prof" required>
-                        <option value="" disabled selected>Submit to:</option>
+                        <option value="" id='professor' disabled selected>Submit to:</option>
                             <?php foreach($list as $li) {?>
                                 <option value="<?=$li['ID']?>"><?=$li['last_name']. ', ' . $li['first_name'] . ' ' . (!empty($li['middle_name']) ? $li['middle_name'] : '')?></option>
                             <?php
@@ -212,7 +214,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                      <select class="form-select" id="Reason" name="Reason" required>
                         <option value="" disabled selected>Reason of Absent:</option>
                         <?php foreach($reasons as $reason) {?>
-                        <option value="<?=$reason['id']?>"><?=$reason['type']?></option>
+                            <option value="<?=$reason['id']?>"><?=$reason['type']?></option>
                         <?php
                         }
                         ?>
@@ -262,7 +264,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 </div>
 
-
 <!-- Delete modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -274,12 +275,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="modal-body">
                 <p>Are you sure you want to delete this submission?</p>
                 <ul>
-                    <li><strong>ID:</strong> <span id="deleteID"></span></li>
-                    <li><strong>Professor:</strong> <span id="deleteSubject"></span></li>
+                    <li><strong>Professor:</strong> <span id="deleteCourse"></span></li>
                     <li><strong>Date of Absent:</strong> <span id="deleteDateAbsent"></span></li>
                     <li><strong>Comment:</strong> <span id="deleteComment"></span></li>
+                    <li><strong>Reason (type):</strong> <span id="deleteReason"></span></li>
                     <div class="text-center mt-3">
-                    <img id="deletePhoto" src="" alt="Photo Preview" class="img-thumbnail" style="max-width: 150px;">
+                        <img id="deletePhoto" src="" alt="Photo Preview" class="img-thumbnail" style="max-width: 150px;">
                     </div>
                 </ul>
             </div>
@@ -291,6 +292,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 </div>
 
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -301,8 +304,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
      sidebar.classList.toggle("active");
     });
  
-    // modal para sa edit submission (not working properly)
-    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
         const modal = new bootstrap.Modal(document.getElementById('excuseLetterModal'));
 
         const editButtons = document.querySelectorAll('.edit-button');
@@ -310,19 +312,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         editButtons.forEach(button => {
             button.addEventListener('click', function () {
                 const id = this.getAttribute('data-id');
-                const professor = this.getAttribute('professor');
-                const reason = this.getAttribute('Reason');
+                const professor = this.getAttribute('data-professor');
+                const reason = this.getAttribute('data-reason');
                 const dateAbsent = this.getAttribute('data-date-absent');
                 const comment = this.getAttribute('data-comment');
 
+                // Set the values in the modal inputs
                 document.getElementById('professor').value = professor;
-                document.getElementById('Reason').value = Reason;
+                document.getElementById('Reason').value = reason;
                 document.getElementById('editDateOfAbsent').value = dateAbsent;
                 document.getElementById('editComment').value = comment;
                 document.getElementById('editId').value = id;
+                
                 modal.show();
             });
         });
+    });
+
+
 
         const form = document.getElementById('editSubmissionForm');
         form.addEventListener('submit', function (event) {
@@ -378,17 +385,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             });
         });
-    });
 
     // delete confimation 
     document.addEventListener('DOMContentLoaded', function () {
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
     const deleteButtons = document.querySelectorAll('.delete-button');
 
-    const deleteId = document.getElementById('id');
-    const deleteSubjectElement = document.getElementById('deleteSubject');
+    const deleteCourseElement = document.getElementById('deleteCourse');
     const deleteDateAbsentElement = document.getElementById('deleteDateAbsent');
     const deleteCommentElement = document.getElementById('deleteComment');
+    const deleteReasonTypeElement = document.getElementById('deleteReason');
     const deletePhotoElement = document.getElementById('deletePhoto');
     const confirmDeleteButton = document.getElementById('confirmDelete');
 
@@ -397,26 +403,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
-            const subject = this.getAttribute('data-subject');
+            const course = this.getAttribute('data-course');
+            const reason = this.getAttribute('data-reason');
             const dateAbsent = this.getAttribute('data-date-absent');
             const comment = this.getAttribute('data-comment');
-
-            // Log data attributes to confirm they're being fetched
-            console.log("ID:", id, "Subject:", subject, "Date Absent:", dateAbsent, "Comment:", comment);
-
-            // Fetch the photo URL from the 'img' element in the same <tr>
-            const photo = this.closest('tr').querySelector('.photo-thumbnail').getAttribute('src');
-            console.log("Photo:", photo);
+            const photo = this.closest('tr').querySelector('img').getAttribute('src'); // Get photo URL
 
             // Populate the modal with the data
-            deleteId.textContent = id;
-            deleteSubjectElement.textContent = subject;
+            deleteCourseElement.textContent = course;
             deleteDateAbsentElement.textContent = dateAbsent;
             deleteCommentElement.textContent = comment;
+            deleteReasonTypeElement.textContent = reason;
             deletePhotoElement.setAttribute('src', photo);
-
-            // Store the row for deletion
-            rowToDelete = this.closest('tr');
 
             // Show the modal after setting the data
             deleteModal.show();
@@ -431,9 +429,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Hide the modal
             deleteModal.hide();
 
-            // Perform additional actions here (e.g., send a request to the server to delete from the database)
+            // Perform server-side deletion (you can implement the actual deletion logic here)
             console.log('Deleted entry with details:', {
-                subject: deleteSubjectElement.textContent,
+                course: deleteCourseElement.textContent,
                 date_absent: deleteDateAbsentElement.textContent,
                 comment: deleteCommentElement.textContent,
                 photo: deletePhotoElement.getAttribute('src')
