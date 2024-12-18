@@ -7,6 +7,9 @@
     } 
 </style>
 
+<?php 
+$date = date("Y-m-d H:i:s");
+?>
 <div class="modal fade" id="approvalButtons" tabindex="-1" aria-labelledby="approvalButtonsLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -22,15 +25,18 @@
     </div>
 </div>
 
-
 <script>
+    const sessionId = <?php echo json_encode($_SESSION['adviser_id']); ?>;
+    const date = <?php echo json_encode($date); ?>;
+    
     document.addEventListener('DOMContentLoaded', function () {
     const modal = new bootstrap.Modal(document.getElementById('approvalButtons'));
-
+    
     document.querySelectorAll('.approvalButtons button').forEach(button => {
         button.addEventListener('click', function () {
             const action = button.getAttribute('data-action'); // 'approve' or 'decline'
             const name = button.getAttribute('data-name');
+            const id = button.getAttribute('data-id');
             const course = button.getAttribute('data-course');
             const dateAbsent = button.getAttribute('data-date-absent');
 
@@ -48,9 +54,34 @@
 
             const confirmButton = document.getElementById('modal-confirm');
             confirmButton.onclick = function () {
-                console.log(`${action} the letter of ${name}`);
-                modal.hide();
+                const endpoint = action === 'approve' ? 'approve_request.php' : 'decline_request.php';
+
+                // Send data via AJAX
+                fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        excuse_letter_id: id,
+                        adviser_id: sessionId,
+                        date: date,
+                        approval: action === 'approve' ? 'Approved' : 'Denied'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Refresh the page
+                    }
+                    modal.hide();
+                })
+                .catch(() => {
+                    modal.hide();
+                });
             };
+
+            modal.show();
         });
     });
 });

@@ -114,7 +114,7 @@ class user {
     // }
     
     function get_course($department_id) {
-        $sql = "SELECT * FROM subject 
+        $sql = "SELECT subject.id AS id, subject.name AS name, acronym FROM subject 
         LEFT JOIN department ON subject.department_id = department.id
         WHERE department.id = :department_id";
 
@@ -144,7 +144,7 @@ class user {
     }
 
     function excuse($date_absent, $comment, $excuse_letter, $course_id, $student_id, $reason_id, $prof_id) {
-        $sql = "INSERT INTO excuse_letter (excuse_letter, comment, date_submitted, date_absent, course_id, student_id, reason_id, prof_id) VALUES 
+        $sql = "INSERT INTO excuse_letter (excuse_letter, comment, date_submitted, date_absent, subject_id, student_id, reason_id, prof_id) VALUES 
         (:excuse_letter, :comment, :date_submitted, :date_absent, :course_id, :student_id, :reason_id, :prof_id)";
         
         $query = $this->pdo->prepare($sql);
@@ -154,7 +154,7 @@ class user {
         $query->bindParam(":date_absent", $date_absent);
         $t = date("Y-m-d");
         $query->bindParam(":date_submitted", $t);
-        $query->bindParam(":course_id", $course_id);
+        $query->bindParam(":subject_id", $course_id);
         $query->bindParam(":student_id", $student_id);
         $query->bindParam(":reason_id", $reason_id);
         $query->bindParam(":prof_id", $prof_id);
@@ -214,7 +214,7 @@ class user {
     // }
 
     function excuse_letters($id) {
-        $sql = "SELECT DISTINCT excuse_letter.id as id, CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS professors_name, acronym, date_absent, date_submitted, comment, type, excuse_letter, professors.ID as prof_id, reason.id as reason_id
+        $sql = "SELECT DISTINCT CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS professors_name, acronym, date_absent, date_submitted, comment, type, excuse_letter, professors.ID as prof_id, reason.id as reason_id
         FROM excuse_letter 
         LEFT JOIN subject ON excuse_letter.subject_id = subject.id 
         LEFT JOIN reason ON excuse_letter.reason_id = reason.id

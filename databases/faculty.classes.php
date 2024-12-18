@@ -24,13 +24,15 @@ class faculty {
             if ($data) {
                 session_start();
                 $_SESSION['ids'] = $data['ids'];
+                $_SESSION['adviser_id'] = $data['id'];
                 $_SESSION['last_name'] = $data['last_name'];
                 $_SESSION['first_name'] = $data['first_name'];
                 $_SESSION['middle_name'] = $data['middle_name'];
                 $_SESSION['department_id'] = $data['department_id'];
                 $_SESSION['user_type'] = $data['user_type'];
                 $_SESSION['year_level'] = $data['year_level'];
-
+                $_SESSION['login'] = date("Y-m-d H:i:s");
+                
                 return true; 
             }
         }
@@ -185,19 +187,20 @@ class faculty {
     }
 
     function get_adviser_excuse_letter($department_id){
-        $sql = "SELECT DISTINCT CONCAT(stud_user.last_name, ', ', stud_user.first_name, IFNULL(CONCAT(' ', stud_user.middle_name), '')) AS student_name, sections.name, CONCAT(prof_user.last_name, ', ', prof_user.first_name, IFNULL(CONCAT(' ', prof_user.middle_name), '')) AS professor_name, date_absent, date_submitted, comment, reason.type, excuse_letter, approval.approved_adviser
+        $sql = "SELECT DISTINCT excuse_letter.id AS id, CONCAT(stud_user.last_name, ', ', stud_user.first_name, IFNULL(CONCAT(' ', stud_user.middle_name), '')) AS student_name, program.name, CONCAT(prof_user.last_name, ', ', prof_user.first_name, IFNULL(CONCAT(' ', prof_user.middle_name), '')) AS professor_name, 
+        date_absent, date_submitted, comment, reason.type, excuse_letter, subject.name AS subject_name, approval.approved_adviser as approval, approval.date_adviser_approved as date_approved, approval.id as approval_id
         FROM excuse_letter
         JOIN student ON excuse_letter.student_id = student.student_id
-        JOIN sections ON student.sections_id = sections.id
+        JOIN subject ON excuse_letter.subject_id = subject.id
+        JOIN program ON student.program_id = program.id
         JOIN reason ON excuse_letter.reason_id = reason.id
         JOIN users AS stud_user ON student.user_id = stud_user.ids
-        JOIN prof_approval ON excuse_letter.id = prof_approval.excuse_letter_id
-        JOIN professors ON prof_approval.prof_id = professors.ID
+        JOIN professors ON excuse_letter.prof_id = professors.ID
         JOIN users AS prof_user ON professors.user_id = prof_user.ids
-        JOIN adviser ON sections.year_level = adviser.year_level
-        JOIN department ON sections.department_id = department.id
+        JOIN adviser ON program.year_level = adviser.year_level
+        JOIN department ON program.department_id = department.id
         JOIN approval ON approval.excuse_letter_id = excuse_letter.id
-        WHERE (department.id = :department_id) AND (sections.year_level = adviser.year_level) AND (approval.approved_adviser = 'NULL')";
+        WHERE (department.id = :department_id) AND (program.year_level = adviser.year_level)";
 
         $query = $this->pdo->prepare($sql);
 
