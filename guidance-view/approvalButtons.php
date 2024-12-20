@@ -26,7 +26,7 @@ $date = date("Y-m-d H:i:s");
 </div>
 
 <script>
-    const sessionId = <?php echo json_encode($_SESSION['adviser_id']); ?>;
+    const sessionId = <?php echo json_encode($_SESSION['guidance_id']); ?>;
     const date = <?php echo json_encode($date); ?>;
     
     document.addEventListener('DOMContentLoaded', function () {
@@ -64,7 +64,7 @@ $date = date("Y-m-d H:i:s");
                     },
                     body: JSON.stringify({
                         excuse_letter_id: id,
-                        adviser_id: sessionId,
+                        guidance_id: sessionId,
                         date: date,
                         approval: action === 'approve' ? 'Approved' : 'Denied'
                     })

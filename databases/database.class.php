@@ -145,7 +145,7 @@ class user {
 
     function excuse($date_absent, $comment, $excuse_letter, $course_id, $student_id, $reason_id, $prof_id) {
         $sql = "INSERT INTO excuse_letter (excuse_letter, comment, date_submitted, date_absent, subject_id, student_id, reason_id, prof_id) VALUES 
-        (:excuse_letter, :comment, :date_submitted, :date_absent, :course_id, :student_id, :reason_id, :prof_id)";
+        (:excuse_letter, :comment, :date_submitted, :date_absent, :subject_id, :student_id, :reason_id, :prof_id)";
         
         $query = $this->pdo->prepare($sql);
 
@@ -214,7 +214,7 @@ class user {
     // }
 
     function excuse_letters($id) {
-        $sql = "SELECT DISTINCT CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS professors_name, acronym, date_absent, date_submitted, comment, type, excuse_letter, professors.ID as prof_id, reason.id as reason_id
+        $sql = "SELECT DISTINCT CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS professors_name, acronym, date_absent, date_submitted, comment, type, excuse_letter, professors.ID as prof_id, reason.id as reason_id, prof_awknowledge
         FROM excuse_letter 
         LEFT JOIN subject ON excuse_letter.subject_id = subject.id 
         LEFT JOIN reason ON excuse_letter.reason_id = reason.id

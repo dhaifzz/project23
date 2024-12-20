@@ -5,11 +5,11 @@ require_once '../functions/functions.php';
 $data = json_decode(file_get_contents('php://input'), true);
 
 $excuse_letter_id = clean_input($data['excuse_letter_id'] ?? null);
-$adviser_id = clean_input($data['adviser_id'] ?? null);
+$guidance_id = clean_input($data['guidance_id'] ?? null);
 $date = clean_input($data['date'] ?? null);
 $approval = clean_input($data['approval'] ?? null);
 
-if (!$excuse_letter_id || !$adviser_id || !$approval) {
+if (!$excuse_letter_id || !$guidance_id || !$approval) {
     echo json_encode([
         'success' => false,
         'message' => 'Missing required data!'
@@ -22,15 +22,15 @@ if (!$excuse_letter_id || !$adviser_id || !$approval) {
         $db = new Database();
         $pdo = $db->connect();
 
-        $stmt = $pdo->prepare("UPDATE approval SET noted_adviser = :noted_adviser, approved_adviser = :approved_adviser, date_adviser_approved = :date_adviser_approved WHERE id = :id ");
+        $stmt = $pdo->prepare("UPDATE approval SET noted_guidance = :noted_guidance, approved_guidance = :approved_guidance, date_guidance_approved = :date_guidance_approved WHERE id = :id ");
 
-        $stmt->bindParam(":noted_adviser", $adviser_id);
-        $stmt->bindParam(":approved_adviser", $approval);
-        $stmt->bindParam(":date_adviser_approved", $date);
+        $stmt->bindParam(":noted_guidance", $guidance_id);
+        $stmt->bindParam(":approved_guidance", $approval);
+        $stmt->bindParam(":date_guidance_approved", $date);
         $stmt->bindParam(":id", $excuse_letter_id);
-
-        $stmt->execute();
         
+        $stmt->execute();
+
         if ($stmt->rowCount()) {
             echo json_encode([
                 'success' => true,

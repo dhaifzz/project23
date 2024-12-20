@@ -7,7 +7,7 @@ session_start();
 
 if (!isset($_SESSION['account'])) {
     switch ($_SESSION['account']['user_type']) {
-        case 'Adviser':
+        case 'Guidance':
             $faculty->get_guidance($username);
             header('Location: ../professor-view/faculty.php');
             break;
@@ -101,10 +101,10 @@ $i = 1;
             <div class="subject-area">
                 <i class="fa-solid fa-caret-right"></i>
                 <div class="subject-name"><?=$arr['year_level']?> Year</div>
-                <button class="view-button" type="button" data-subject="<?=$i?>">View</button>
+                <button class="view-button" type="button" data-subject="<?=$subject?>" data-year="<?=$arr['year_level']?>">View</button>
                 <span class="pending-badge">
                     <i class="fa-solid fa-clock-rotate-left" title="Pending"></i>
-                    <span class="pending-count">0</span>
+                    <span class="pending-count"><?=$arr['TOTAL']?></span>
                 </span>
             </div>
         <?php $i++; } ?>
@@ -138,7 +138,7 @@ $i = 1;
                 pendingCountElement.classList.remove('pending-red');
                 caretIcon.classList.add('arrow-black');
                 caretIcon.classList.remove('arrow-red');
-            } else if (pendingCount > 1) {
+            } else if (pendingCount >= 1) {
                 pendingCountElement.classList.add('pending-red');
                 pendingCountElement.classList.remove('pending-black');
                 caretIcon.classList.add('arrow-red');
@@ -146,6 +146,19 @@ $i = 1;
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.view-button');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            const subject = this.getAttribute('data-subject');
+            const year = this.getAttribute('data-year');
+            // Redirect to yearTable.php with subject and year as query parameters
+            window.location.href = `yearTable.php?subject=${encodeURIComponent(subject)}&year=${encodeURIComponent(year)}`;
+        });
+    });
+});
 </script>
 </body>
 </html>

@@ -119,6 +119,57 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         <span class="profile-class" name="course"><?=$_SESSION['name']?></span>
     </div>
   </div>
+
+  <div class="container mt-4">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Subject</th> 
+                    <th>Professor</th>
+                    <th>Date of Absent</th>
+                    <th>Date of Submission</th>
+                    <th>Comment</th>
+                    <th>Reason</th>
+                    <th>Photo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <?php foreach ($submissions as $submission): 
+            if($submission['prof_awknowledge'] == "Approved" || $submission['prof_awknowledge'] == "Denied"):
+            ?>
+            <tbody>
+               <?php
+                    if(empty($submissions)) { ?>
+                    <tr>
+                        <td colspan="8" style="text-align: center;">No Excuse Letter Submitted</td>
+                    </tr>
+                <?php  } ?>
+                       <tr>
+                           <td><?= clean_input($submission['acronym']) ?></td>
+                           <td><?= clean_input($submission['professors_name']) ?></td>
+                           <td><?= clean_input($submission['date_absent']) ?></td>
+                           <td><?= clean_input($submission['date_submitted']) ?></td>
+                           <td><?= clean_input($submission['comment']) ?></td>
+                           <td><?= clean_input($submission['type']) ?></td>
+                           <td>
+                               <img src='<?=clean_input($submission['excuse_letter'])?>' alt='Photo' class='img-thumbnail' style='width:50px;' cursor:pointer; data-bs-toggle='modal' data-bs-target='#photoModal' data-photo='<?=$submission['excuse_letter']?>'>
+                           </td>
+                        <?php if ($submission['prof_awknowledge'] == "Approved"): ?>
+                            <td>
+                                <p>HI</p>
+                            </td>
+                            <?php elseif ($submission['prof_awknowledge'] == "Denied"): ?>
+                            <td>
+                                <p>Hello</p>
+                            </td>
+                        <?php endif; ?>  
+                       </tr>
+                </tbody>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </table>
+</div>
+
 <div class="container mt-4">
         <table class="table table-bordered">
             <thead>
@@ -133,16 +184,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <th>Actions</th>
                 </tr>
             </thead>
+            <?php foreach ($submissions as $submission): 
+            if($submission['prof_awknowledge'] == "Pending"):
+            ?>
             <tbody>
                <?php
-
-                    
                     if(empty($submissions)) { ?>
                     <tr>
                         <td colspan="8" style="text-align: center;">No Excuse Letter Submitted</td>
                     </tr>
-                <?php  }
-                    foreach ($submissions as $submission) { ?>
+                <?php  } ?>
                        <tr>
                            <td><?= clean_input($submission['acronym']) ?></td>
                            <td><?= clean_input($submission['professors_name']) ?></td>
@@ -178,12 +229,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                               </button>
                            </td>
                        </tr>
-                <?php   
-                  }
-                ?>
-            </tbody>
+                </tbody>
+            <?php endif; ?>
+        <?php endforeach; ?>
         </table>
     </div>
+    
 
     <div class="modal fade" id="excuseLetterModal" tabindex="-1" aria-labelledby="excuseLetterModalLabel" aria-hidden="true">
     <div class="modal-dialog">

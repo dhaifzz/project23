@@ -55,10 +55,12 @@ class faculty {
             if ($data) {
                 session_start();
                 $_SESSION['ids'] = $data['ids'];
+                $_SESSION['guidance_id'] = $data['guidance_id'];
                 $_SESSION['last_name'] = $data['last_name'];
                 $_SESSION['first_name'] = $data['first_name'];
                 $_SESSION['middle_name'] = $data['middle_name'];
                 $_SESSION['user_type'] = $data['user_type'];
+                $_SESSION['login'] = date("Y-m-d H:i:s");
 
                 return true; 
             }
@@ -88,6 +90,7 @@ class faculty {
                 $_SESSION['department_id'] = $data['department_id'];
                 $_SESSION['user_type'] = $data['user_type'];
                 $_SESSION['ID'] = $data['ID'];
+                $_SESSION['login'] = date("Y-m-d H:i:s");
 
                 return true; 
             }
@@ -115,8 +118,8 @@ class faculty {
     function get_dept() {
         $sql = "SELECT department.name as Name, COALESCE(COUNT(DISTINCT approval.noted_adviser), 0) as Count
         FROM department
-        LEFT JOIN sections ON department.id = sections.department_id
-        LEFT JOIN student ON student.sections_id = sections.id
+        LEFT JOIN program ON department.id = program.department_id
+        LEFT JOIN student ON student.program_id = program.id
         LEFT JOIN excuse_letter ON student.student_id = excuse_letter.student_id
         LEFT JOIN approval ON approval.excuse_letter_id = excuse_letter.id AND approval.approved_adviser = 1
         LEFT JOIN adviser ON approval.noted_adviser = adviser.id
@@ -133,7 +136,16 @@ class faculty {
     }
 
     function get_total_year($subject) {
-        $sql = "SELECT year_level FROM sections LEFT JOIN department ON department.id = sections.department_id WHERE department.name LIKE :name ORDER BY year_level ASC";
+        $sql = "SELECT program.year_level, COUNT(CASE WHEN approval.approved_adviser = 'Approved' THEN approval.id END) AS TOTAL 
+        FROM program 
+        LEFT JOIN department ON department.id = program.department_id 
+        LEFT JOIN student ON student.program_id = program.id
+        LEFT JOIN excuse_letter ON excuse_letter.student_id = student.student_id
+        LEFT JOIN subject ON excuse_letter.subject_id = subject.id 
+        LEFT JOIN approval ON excuse_letter.id = approval.excuse_letter_id
+        WHERE department.name LIKE :name
+        GROUP BY program.year_level
+        ORDER BY program.year_level ASC";
 
         $query = $this->pdo->prepare($sql);
         $query->bindParam(":name", $subject); 
@@ -150,7 +162,7 @@ class faculty {
         LEFT JOIN excuse_letter ON subject.id = excuse_letter.subject_id AND excuse_letter.prof_id = :prof_id
         LEFT JOIN department ON subject.department_id = department.id
         LEFT JOIN approval ON excuse_letter.id = approval.excuse_letter_id
-        WHERE (subject.department_id = :id) AND (approval.approved_adviser = 1) AND (approval.approved_guidance = 1)
+        WHERE (subject.department_id = :id) AND (approval.approved_guidance = 'Approved')
         GROUP BY subject.id, subject.name, acronym 
         ORDER BY total DESC";
 
@@ -166,17 +178,18 @@ class faculty {
     }
     
     function get_excuse_letters($subject, $prof_id) {
-        $sql = "SELECT DISTINCT CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS name, date_submitted, date_absent, comment, sections.name as course, reason.type, excuse_letter
+        $sql = "SELECT DISTINCT CONCAT(last_name, ', ', first_name, IFNULL(CONCAT(' ', middle_name), '')) AS name, date_submitted, date_absent, comment, program.name as course, reason.type, excuse_letter, excuse_letter.id as id, excuse_letter.prof_awknowledge as approval_type, excuse_letter.approval_date as prof_approved_date
         FROM excuse_letter 
-        LEFT JOIN course ON excuse_letter.course_id = course.id
+        LEFT JOIN subject ON excuse_letter.subject_id = subject.id
         LEFT JOIN student ON excuse_letter.student_id = student.student_id
         LEFT JOIN reason ON excuse_letter.reason_id = reason.id
-        LEFT JOIN sections ON student.sections_id = sections.id
+        LEFT JOIN program ON student.program_id = program.id
         LEFT JOIN users ON student.user_id = users.ids
-        WHERE (course.name = :course_name) AND (excuse_letter.prof_id = :prof_id)";
+        LEFT JOIN approval ON excuse_letter.id = approval.excuse_letter_id
+        WHERE (subject.name = :subject_name) AND (excuse_letter.prof_id = :prof_id) AND (approval.approved_guidance = 'Approved')";
 
         $query = $this->pdo->prepare($sql);
-        $query->bindParam(":course_name", $subject); 
+        $query->bindParam(":subject_name", $subject); 
         $query->bindParam(":prof_id", $prof_id); 
         $data = null;
 
@@ -206,6 +219,33 @@ class faculty {
 
         $query->bindParam(":department_id", $department_id); 
 
+        $data = null;
+
+        if($query->execute()) {
+            $data = $query->fetchAll();
+        }
+        return $data;
+    }
+
+    function get_guidance_excuse_letter($subject, $year){
+        $sql = "SELECT DISTINCT excuse_letter.id AS id, CONCAT(stud_user.last_name, ', ', stud_user.first_name, IFNULL(CONCAT(' ', stud_user.middle_name), '')) AS student_name, program.name, CONCAT(prof_user.last_name, ', ', prof_user.first_name, IFNULL(CONCAT(' ', prof_user.middle_name), '')) AS professor_name, 
+        date_absent, date_submitted, comment, reason.type, excuse_letter, subject.name AS subject_name, approval.approved_guidance as approval, approval.date_guidance_approved as date_approved, approval.id as approval_id
+        FROM excuse_letter
+        JOIN student ON excuse_letter.student_id = student.student_id
+        JOIN subject ON excuse_letter.subject_id = subject.id
+        JOIN program ON student.program_id = program.id
+        JOIN reason ON excuse_letter.reason_id = reason.id
+        JOIN users AS stud_user ON student.user_id = stud_user.ids
+        JOIN professors ON excuse_letter.prof_id = professors.ID
+        JOIN users AS prof_user ON professors.user_id = prof_user.ids
+        JOIN department ON program.department_id = department.id
+        JOIN approval ON approval.excuse_letter_id = excuse_letter.id
+        WHERE (department.name = :department_name) AND (program.year_level = :year) AND (approval.approved_adviser = 'Approved')";
+
+        $query = $this->pdo->prepare($sql);
+
+        $query->bindParam(":department_name", $subject); 
+        $query->bindParam(":year", $year); 
         $data = null;
 
         if($query->execute()) {
