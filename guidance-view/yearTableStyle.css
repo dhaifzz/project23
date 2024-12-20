@@ -35,6 +35,8 @@ li {
    .main {
        min-height: 100vh;
        min-width: 100%;
+       box-sizing: border-box;
+       position: absolute;
        background-size: 20px 55px;
        transition: margin-left 0.4s ease;
        background-image: repeating-linear-gradient(0deg, #ffd7d7, #ffd7d7 1px, whitesmoke 1px, whitesmoke);
@@ -51,7 +53,7 @@ li {
     transition: all 0.4s ease;
    }
    .sidebar.active ~ .main {
-    margin-left: 160px; /* Shift content right */
+    margin-left: 150px; /* Shift content right */
     width: calc(100% - 250px); /* Adjust width */
 }
    .sidebar.active{
@@ -212,13 +214,14 @@ li {
        border-radius: 5px;
        border-collapse: separate;
    }
-   .table td, .table th{
+   .table td, .th{
        border: solid 0.5px #D9D9D9;
        border-radius: 5px;
    }
    .table th{
        background:#b71c1c;
        color: white;
+       text-align: center;
    }
    
    .profile-image {
@@ -227,6 +230,13 @@ li {
        border-radius: 50%;
        object-fit: cover;
        margin-right: 15px;
+   }
+   .subject-container{
+    margin-top: 20px;
+    border: 1px solid #D9D9D9;
+    border-radius: 7px;
+    padding: 12px;
+    background-color: white;
    }
    
    .profile-info {
@@ -263,7 +273,6 @@ li {
    .subject-area:hover {
        background-color: #eeeeee;
    }
-   
    .subject-code {
        margin-right: 6px;
        color: #333;
@@ -405,7 +414,7 @@ li {
 
 .scrollable-dropdown::-webkit-scrollbar-track {
     background: #f1f1f1; /* Background of the scrollbar track */
-    border-radius: 10px; /* Rounded corners */
+    border-radius: 10px; 
 }
 
 .scrollable-dropdown::-webkit-scrollbar-thumb:hover {
@@ -444,3 +453,8 @@ li {
    td.names {
     color: red;
    }
+   .table-bordered{
+    max-width: 1300px;
+    margin-top: 15px;
+}
+  
